@@ -31,9 +31,10 @@ class UserSerializer(serializers.ModelSerializer):
         hashed_password = make_password(value)
         return hashed_password
 
+class UserIDSerializer(serializers.Serializer):
+    id = serializers.UUIDField(format='hex')
 
-class OTPSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Otp
-        fields = ['user.id', 'otp_value']
+    
+class OTPSerializer(serializers.Serializer):
+    id = serializers.UUIDField(format='hex')
+    otp_value = serializers.IntegerField(write_only=True)

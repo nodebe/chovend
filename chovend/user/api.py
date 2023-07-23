@@ -1,8 +1,12 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import exception_handler
+from chovend.serializers import ErrorResponseSerializer
+from chovend.errors import UserError
+from user.classes import OTP
 from user.models import User
-from user.serializers import UserSerializer
+from user.serializers import UserSerializer, UserIDSerializer, OTPSerializer
 from chovend.response import error_response, success_response
 
 
@@ -14,15 +18,73 @@ def register(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        user = serializer.data
 
-        response = success_response(input_=serializer.data, status_=status.HTTP_201_CREATED)
-
-        return response
+        return success_response(
+            input_=serializer.data, 
+            status_=status.HTTP_201_CREATED
+        )
 
     else:
-        response = error_response(input_ = serializer)
+        return error_response(
+            input_=serializer,
+            status_=status.HTTP_400_BAD_REQUEST
+        )
 
-        return response
+@api_view(['POST'])
+def send_otp(request):
+    serializer = UserIDSerializer(data=request.data)
+    if serializer.is_valid():
+        try:
+            user = User.objects.get(id=serializer.data['id'])
+            
+            otp_object = OTP()
+            otp_object.generate_otp(user)
+            otp_object.send_otp_to_email(user.email)
 
-# @api_view(['POST'])
+            return success_response(
+                input_=serializer.data, 
+                status_=status.HTTP_201_CREATED,
+                msg_='OTP sent to email!'
+            )
+        
+        except Exception as e:
+            error_serializer = ErrorResponseSerializer(data={'msg': str(e)})
+
+            if error_serializer.is_valid():
+                return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    else:
+        return error_response(
+            input_=serializer
+        )
+
+@api_view(['POST'])
+def verify_otp(request):
+    serializer = OTPSerializer(data = request.data)
+
+    if serializer.is_valid():
+        try:
+            user = User.objects.get(id=serializer.data['id'])
+            
+            otp_object = OTP()
+            otp_object.verify_otp(user, request.data['otp_value'])
+            
+            return success_response(
+                input_=serializer.data, 
+                status_=status.HTTP_201_CREATED,
+                msg_='User Verified!'
+            )
+        
+        except Exception as e:
+            error_serializer = ErrorResponseSerializer(data={'msg': str(e), 'data':{'id': serializer.data['id']}})
+
+            if error_serializer.is_valid():
+                return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(serializer.data)
+    else:
+        return Response(serializer.errors)
