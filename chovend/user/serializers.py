@@ -4,12 +4,19 @@ from password_validator import PasswordValidator
 from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(min_length=6, null=False, write_only=True)
+    password = serializers.CharField(min_length=6, write_only=True)
+    ip_address = serializers.IPAddressField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'fullname', 'password', 'ip_address']
-
+        read_only_fields = ['id']
+        fields = read_only_fields + [
+            'email', 
+            'fullname',
+            'password',
+            'ip_address'
+        ]
+    
     def validate_password(self, value):
         ''' Checks and verifies that password is secure
             Password must have minimum of 6 characters, have an uppercase, a lowercase, a number, and a symbol
@@ -23,6 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
         
         hashed_password = make_password(value)
         return hashed_password
+
 
 class OTPSerializer(serializers.ModelSerializer):
 
