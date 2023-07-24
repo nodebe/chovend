@@ -39,6 +39,7 @@ class OTP:
         self.check_time_validity(user.otp.created_at)
 
         user.verified = True
+        user.is_active = True
         user.otp.save()
         user.save()
 

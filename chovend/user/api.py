@@ -86,3 +86,7 @@ def verify_otp(request):
 
     else:
         return Response(serializer.errors)
+    
+@api_view(['POST'])
+def login(request):
+    pass
