@@ -6,7 +6,6 @@ from django.contrib.auth.hashers import make_password
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=6, write_only=True)
     ip_address = serializers.IPAddressField(write_only=True)
-    token = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
@@ -39,3 +38,11 @@ class UserIDSerializer(serializers.Serializer):
 class OTPSerializer(serializers.Serializer):
     id = serializers.UUIDField(format='hex')
     otp_value = serializers.IntegerField(write_only=True)
+
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+class UserLoginResponseSerializer(serializers.Serializer):
+    id = serializers.UUIDField(format='hex')
+    token = serializers.CharField()

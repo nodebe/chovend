@@ -1,12 +1,57 @@
 import random
-from user.models import Otp
+from user.models import Otp, User
 from django.utils import timezone
 from rest_framework import status
 from chovend.senders import send_email
 from chovend.errors import UserError
-from datetime import datetime as dt
+from django.contrib.auth.hashers import check_password
+from rest_framework_simplejwt.tokens import RefreshToken
 
-class OTP:
+class UserClass:
+
+    def get_user_by_id(self, id:str):
+        user = User.objects.filter(id=id).first()
+
+        return user
+
+    def get_user_by_email(self, email:str):
+        user = User.objects.filter(email=email).first()
+
+        return user
+    
+    def verify_login_password(self, db_password, login_password):
+        if check_password(login_password, db_password):
+            return True
+        else:
+            raise UserError('Incorrect Password!')
+
+    def login_user(self, data:dict):
+        user = self.get_user_by_email(data['email'])
+
+        if user == None:
+            raise UserError('Email does not exist!', '404')
+
+        # Verify User's password
+        self.verify_login_password(db_password=user.password, login_password=data['password'])
+
+        # Update last login
+        self.update_last_login(user)
+
+        # Generate JWT Token for user.
+        token = RefreshToken.for_user(user).access_token
+
+        user_data = {
+            **user.__dict__,
+            'token': str(token)
+        }
+
+        return user_data
+
+    def update_last_login(self, user):
+        user.last_login = timezone.now()
+        user.save()
+
+class OTPClass:
 
     def get_otp_row(self, user):
         otp = Otp.objects.get(user=user.id)
