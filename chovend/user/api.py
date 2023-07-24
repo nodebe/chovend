@@ -1,13 +1,12 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.views import exception_handler
 from chovend.serializers import ErrorResponseSerializer
-from chovend.errors import UserError
 from user.classes import OTP
 from user.models import User
 from user.serializers import UserSerializer, UserIDSerializer, OTPSerializer
 from chovend.response import error_response, success_response
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 @api_view(['POST'])
@@ -74,7 +73,7 @@ def verify_otp(request):
             return success_response(
                 input_=serializer.data, 
                 status_=status.HTTP_201_CREATED,
-                msg_='User Verified!'
+                msg_='Verified!'
             )
         
         except Exception as e:
@@ -85,6 +84,5 @@ def verify_otp(request):
             else:
                 return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(serializer.data)
     else:
         return Response(serializer.errors)

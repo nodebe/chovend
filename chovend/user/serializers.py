@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import make_password
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=6, write_only=True)
     ip_address = serializers.IPAddressField(write_only=True)
+    token = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
