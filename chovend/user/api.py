@@ -56,7 +56,8 @@ def send_otp(request):
     
     else:
         return error_response(
-            input_=serializer
+            input_=serializer,
+            status_= status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
 @api_view(['POST'])
@@ -95,13 +96,16 @@ def login(request):
         try:
             user_object = UserClass()
             login_user = user_object.login_user(serializer.data)
-            print(login_user)
+
             response_serializer = UserLoginResponseSerializer(data=login_user)
             
             if response_serializer.is_valid():
-                return Response(response_serializer.data)
+                return success_response(
+                    input_=response_serializer.data, 
+                    status_=status.HTTP_200_OK,
+                    msg_='Logged in!'
+                )
             else:
-                return Response(response_serializer.errors)
                 return error_response(
                     input_=serializer,
                     status_=status.HTTP_500_INTERNAL_SERVER_ERROR,

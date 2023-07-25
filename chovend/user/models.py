@@ -33,7 +33,6 @@ class User(AbstractUser):
 
     id = models.CharField(max_length=36, primary_key=True, null=False)
     email = models.EmailField(null=False, unique=True)
-    # username = models.CharField(max_length=30, null=True, blank=True, default='Chovend')
     fullname = models.CharField(max_length=20, null=False)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     verified = models.BooleanField(default=False)

@@ -154,3 +154,6 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=6)
 }
+
+RAINBOWTESTS_SHOW_MESSAGES = True
+TEST_RUNNER = 'rainbowtests.test.runner.RainbowDiscoverCoverageRunner'

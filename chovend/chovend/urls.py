@@ -6,9 +6,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('register/', register),
-    path('send_otp/', send_otp),
-    path('verify_otp/', verify_otp),
-    path('login/', login)
+    path('register/', register, name='register'),
+    path('send_otp/', send_otp, name='send_otp'),
+    path('verify_otp/', verify_otp, name='verify_otp'),
+    path('login/', login, name='login')
 ]
 
