@@ -1,0 +1,37 @@
+[
+    {
+        "model": "product.SocialMedia",
+        "pk": 1,
+        "fields": {
+            "social_media": "Facebook"
+        }
+    },
+    {
+        "model": "product.SocialMedia",
+        "pk": 2,
+        "fields": {
+            "social_media": "Instagram"
+        }
+    },
+    {
+        "model": "product.SocialMedia",
+        "pk": 3,
+        "fields": {
+            "social_media": "Tiktok"
+        }
+    },
+    {
+        "model": "product.SocialMedia",
+        "pk": 4,
+        "fields": {
+            "social_media": "Twitter"
+        }
+    },
+    {
+        "model": "product.SocialMedia",
+        "pk": 5,
+        "fields": {
+            "social_media": "Whatsapp"
+        }
+    }
+]

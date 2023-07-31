@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from user.models import User, Otp
+from user.models import User
 from password_validator import PasswordValidator
 from django.contrib.auth.hashers import make_password
 
