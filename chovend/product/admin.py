@@ -1,7 +1,9 @@
 from django.contrib import admin
-from .models import Product, City, State, Country, SocialMedia
+from .models import Product, City, State, Country, SocialMedia, ProductSocialMedia
 
 # Register your models here.
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
@@ -13,9 +15,11 @@ class ProductAdmin(admin.ModelAdmin):
         "id"
     ]
 
+
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "city_name",
         "state",
         "get_country_name"
@@ -31,7 +35,8 @@ class CityAdmin(admin.ModelAdmin):
         # Custom method to get country_name from the associated Country model
         return obj.state.country.country_name
 
-    get_country_name.short_description = "Country" 
+    get_country_name.short_description = "Country"
+
 
 @admin.register(State)
 class StateAdmin(admin.ModelAdmin):
@@ -45,6 +50,7 @@ class StateAdmin(admin.ModelAdmin):
 
     ordering = ["country", "state_name"]
 
+
 @admin.register(Country)
 class CountryAdmin(admin.ModelAdmin):
     list_display = (
@@ -53,8 +59,23 @@ class CountryAdmin(admin.ModelAdmin):
 
     ordering = ["country_name"]
 
+
 @admin.register(SocialMedia)
 class SocialMediaAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "social_media",
     )
+
+    ordering = ["id"]
+
+
+@admin.register(ProductSocialMedia)
+class ProductSocialMediaAdmin(admin.ModelAdmin):
+    list_display = (
+        "social_media",
+        "product",
+        "url",
+    )
+
+    ordering = ["product"]

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_elasticsearch_dsl',
     'user',
     'product',
 ]
@@ -149,7 +150,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-        # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",)
+    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",)
 }
 
 SIMPLE_JWT = {
@@ -158,3 +159,14 @@ SIMPLE_JWT = {
 
 RAINBOWTESTS_SHOW_MESSAGES = True
 TEST_RUNNER = 'rainbowtests.test.runner.RainbowDiscoverCoverageRunner'
+
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': os.environ.get('ELASTIC_SEARCH_DB'),
+        'http_auth': (os.environ.get('ELASTIC_SEARCH_USER'), os.environ.get('ELASTIC_SEARCH_PASSWORD')),
+        'use_ssl': True,
+        'verify_certs': False,
+        'ssl_show_warn': False,
+    },
+}
