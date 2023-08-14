@@ -1,3 +1,4 @@
+from chovend.errors import UserError
 from product.models import Country, State, City, Product, SocialMedia, ProductSocialMedia
 
 
@@ -64,3 +65,9 @@ class ProductClass:
             )
 
         return True
+
+    def check_for_duplicate(self, title, description):
+        product = Product.objects.filter(title=title, description=description)
+
+        if product:
+            raise UserError('Product already exists with Title and Description!')

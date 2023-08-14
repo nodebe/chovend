@@ -2,7 +2,6 @@ from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from rest_framework_simplejwt.tokens import RefreshToken
 from user.models import Otp
 
 

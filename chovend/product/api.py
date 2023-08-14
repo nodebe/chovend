@@ -32,6 +32,9 @@ def create_product(request):
     serializer = ProductSerializer(data=request.data)
     if serializer.is_valid():
 
+        dat = {'dat': serializer.data}
+        
+        # return Response(dat, status=status.HTTP_100_CONTINUE)
         try:
             verify_user = verify_user_in_token(
                 request, request.data['user'])
@@ -47,8 +50,13 @@ def create_product(request):
             location_city = location.get_city(city_id=product_data['location'])
             product_data['location'] = location_city
 
+
+            product_obj = ProductClass() # Product Object
+
+            # Check for duplicate product using title and description
+            check_duplicate = product_obj.check_for_duplicate(title=product_data['title'], description=product_data['description'])
+
             # Create Product
-            product_obj = ProductClass()
             product = product_obj.create_product(product_data)
 
             serialized_product = ProductResponseSerializer(instance=product)
