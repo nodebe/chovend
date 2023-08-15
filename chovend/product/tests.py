@@ -39,6 +39,7 @@ class TestCaseBase(APITestCase):
 
     @property
     def create_social_media(self):
+        facebook = SocialMedia.objects.create(id=1, social_media='Facebook')
         twitter = SocialMedia.objects.create(id=4, social_media='Twitter')
         whatsapp = SocialMedia.objects.create(id=5, social_media='Whatsapp')
 
@@ -92,3 +93,35 @@ class TestProductAPI(TestCaseBase):
 
         self.assertEqual(update.status_code, status.HTTP_201_CREATED)
         self.assertEqual(update.data['data']['title'], 'Updated Title!')
+
+    def test_update_product_social_media(self):
+        "Test for updating product social media"
+
+        create_url = reverse('create_product')
+        create = client.post(create_url, data=self.data, format='json', **self.token)
+        created_product_id = create.data['data']['id']
+
+        new_socials_data = {
+            "user": self.data['user'],
+            "social_media_urls": [
+                {
+                    "id": 4,
+                    "url": "https://www.twitter.com/new_twitter"
+                },
+                {
+                    "id": 5,
+                    "url": "https://wa.me/+2348108370072"
+                },
+                {
+                    "id": 1,
+                    "url": "https://facebook.com/new_facebook"
+                }
+            ]
+        }
+
+        update_url = reverse('update_product_social_media', kwargs={'product_id': created_product_id})
+        update = client.put(update_url, data=new_socials_data, format='json', **self.token)
+
+        self.assertEqual(update.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(update.data['msg'], 'Product Updated!')
+        self.assertEqual(update.data['data']['social_media_urls'][0]['url'], 'https://www.twitter.com/new_twitter')
