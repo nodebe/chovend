@@ -6,9 +6,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from user.classes import UserClass
 from product.classes import LocationClass, ProductClass
-from product.serializers import ProductSerializer, ProductResponseSerializer
+from product.serializers import ProductSerializer, ProductResponseSerializer, ProductUpdateSerializer, UpdateSocialMediaSerializer, UpdateSocialMediaResponseSerializer
 from chovend.serializers import ErrorResponseSerializer
-from chovend.utils import verify_user_in_token
+from chovend.utils import verify_user_in_token, verify_owner_of_product
 from chovend.response import error_response, success_response
 
 
@@ -31,10 +31,6 @@ def create_location_db(request):
 def create_product(request):
     serializer = ProductSerializer(data=request.data)
     if serializer.is_valid():
-
-        dat = {'dat': serializer.data}
-        
-        # return Response(dat, status=status.HTTP_100_CONTINUE)
         try:
             verify_user = verify_user_in_token(
                 request, request.data['user'])
@@ -80,3 +76,78 @@ def create_product(request):
             status_=status.HTTP_400_BAD_REQUEST
         )
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_product(request, product_id):
+    try:
+        verify_user = verify_user_in_token(request, request.data['user'])
+
+        product_obj = ProductClass()
+        product = product_obj.get_product_by_id(id=product_id)
+
+        # Verify ownership of product
+        verify_owner = verify_owner_of_product(request, product.user.id)
+
+        serializer = ProductUpdateSerializer(product, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            return success_response(
+                    input_=serializer.data, 
+                    status_=status.HTTP_201_CREATED,
+                    msg_='Product Updated!'
+                )
+        else:
+            return error_response(
+                    input_=serializer,
+                    status_=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    msg_=str(serializer.error_messages)
+                )
+
+    except Exception as e:
+        error_serializer = ErrorResponseSerializer(data={'msg': str(e)})
+
+        if error_serializer.is_valid():
+            return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_product_social_media(request, product_id):
+    try:
+        verify_user = verify_user_in_token(request, request.data['user'])
+        serializer = UpdateSocialMediaSerializer(data=request.data)
+
+        if serializer.is_valid():
+            product_obj = ProductClass()
+            product = product_obj.get_product_by_id(id=product_id)
+
+            # Verify ownership of product
+            verify_owner = verify_owner_of_product(request, product.user.id)
+
+            update_product = product_obj.update_product_social_media(social_media_urls=serializer.data['social_media_urls'], product=product)
+
+            serialize = UpdateSocialMediaResponseSerializer(instance=update_product)
+
+            return success_response(
+                    input_=serialize.data, 
+                    status_=status.HTTP_201_CREATED,
+                    msg_='Product Updated!'
+                )
+            
+        else:
+            return error_response(
+                    input_=serializer,
+                    status_=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    msg_=str(serializer.error_messages)
+                )
+    
+    except Exception as e:
+        error_serializer = ErrorResponseSerializer(data={'msg': str(e)})
+
+        if error_serializer.is_valid():
+            return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

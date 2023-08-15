@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from user.api import register, send_otp, verify_otp, login
-from product.api import create_location_db, create_product
+from product.api import create_location_db, create_product, update_product, update_product_social_media
 
 
 urlpatterns = [
@@ -11,6 +11,8 @@ urlpatterns = [
     path('verify_otp/', verify_otp, name='verify_otp'),
     path('login/', login, name='login'),
     path('create_location_db', create_location_db, name='create_location_db'),
-    path('create_product/', create_product, name='create_product')
+    path('product/create', create_product, name='create_product'),
+    path('product/update/<str:product_id>/', update_product, name='update_product'),
+    path('product/update/social_media/<str:product_id>/', update_product_social_media, name='update_product_social_media')
 ]
 

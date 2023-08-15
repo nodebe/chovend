@@ -78,3 +78,17 @@ class TestProductAPI(TestCaseBase):
 
         self.assertEqual(create.status_code, status.HTTP_201_CREATED)
         self.assertEqual(duplicate.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_product(self):
+        "Tests for updating product"
+        create_url = reverse('create_product')
+        create = client.post(create_url, data=self.data, format='json', **self.token)
+        created_product_id = create.data['data']['id']
+
+        update_url = reverse('update_product', kwargs={'product_id': created_product_id})
+
+        self.data['title'] = 'Updated Title!'
+        update = client.put(update_url, data=self.data, format='json', **self.token)
+
+        self.assertEqual(update.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(update.data['data']['title'], 'Updated Title!')

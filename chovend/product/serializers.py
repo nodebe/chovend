@@ -85,6 +85,15 @@ class ProductUserSerializer(serializers.Serializer):
     email = serializers.EmailField()
     fullname = serializers.CharField()
 
+class ProductUpdateSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(
+        allow_empty=False, min_length=1, max_length=5)
+    
+    class Meta:
+        model = Product
+        read_only_fields = ['id']
+        fields = read_only_fields + ['title', 'description', 'location', 'website', 'images']
+
 
 class ProductResponseSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField()
@@ -98,3 +107,12 @@ class ProductResponseSerializer(serializers.ModelSerializer):
         "Meta info associated with Product models"
         model = Product
         fields = ['id', 'user', 'title', 'description', 'location', 'social_media_urls', 'website', 'images']
+    
+class UpdateSocialMediaSerializer(serializers.Serializer):
+    id = serializers.UUIDField(read_only=True)
+    user = serializers.UUIDField(format='hex')
+    social_media_urls = SocialMediaInputSerializer(many=True)
+
+class UpdateSocialMediaResponseSerializer(serializers.Serializer):
+    id = serializers.UUIDField(read_only=True)
+    social_media_urls = ProductSocialMediaField()

@@ -7,7 +7,7 @@ from .models import Product, City, State, Country, SocialMedia, ProductSocialMed
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
-        "user",
+        "title",
         "id"
     )
     list_filter = [

@@ -54,17 +54,49 @@ class ProductClass:
         social_media = self.create_product_social_media(social_media_urls, product)
 
         return product
+    
+    def create_product_social_media_instance(self, url, social_media_instance, product):
+        product_social_media_instance = ProductSocialMedia.objects.create(
+                social_media=social_media_instance,
+                product=product,
+                url=url
+            )
+        product_social_media_instance.save()
+        return product_social_media_instance
+    
+    def get_social_media_by_id(self, id):
+        social_media = SocialMedia.objects.get(id=id)
+
+        return social_media
 
     def create_product_social_media(self, social_media_urls, product):
         for entry in social_media_urls:
-            social_media_instance = SocialMedia.objects.get(id=entry["id"])
-            ProductSocialMedia.objects.create(
-                social_media=social_media_instance,
-                product=product,
-                url=entry["url"]
-            )
+            social_media_instance = self.get_social_media_by_id(id=entry['id'])
+
+            create_product_social_media = self.create_product_social_media_instance(url=entry['url'], social_media_instance=social_media_instance, product=product)
 
         return True
+    
+
+    def get_product_social_media(self, product, social_media):
+        "Get row for the associated product and social_media"
+        product_social_media = ProductSocialMedia.objects.filter(product=product, social_media=social_media).first()
+
+        return product_social_media
+
+    def update_product_social_media(self, social_media_urls, product):
+        for entry in social_media_urls:
+            social_media_instance = self.get_social_media_by_id(id=entry['id'])
+            product_social_media = self.get_product_social_media(product=product, social_media=social_media_instance)
+
+            if product_social_media != None:
+                product_social_media.url = entry["url"]
+                product_social_media.save()
+
+            else: # If the social media has not been assigned to the product before
+                new_product_social_media = self.create_product_social_media_instance(url=entry['url'], social_media_instance=social_media_instance, product=product)
+        
+        return product
 
     def check_for_duplicate(self, title, description):
         product = Product.objects.filter(title=title, description=description)
