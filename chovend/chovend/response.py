@@ -5,7 +5,7 @@ from chovend.serializers import ErrorResponseSerializer, SuccessResponseSerializ
 
 def error_response(input_, status_, msg_='An error has occured!'):
     response = ErrorResponseSerializer(
-            data = {'data': input_.errors, 'msg': msg_}
+            data = {'data': input_.errors, 'message': msg_}
         )
     if response.is_valid():
         return Response(
@@ -20,7 +20,7 @@ def error_response(input_, status_, msg_='An error has occured!'):
 
 def success_response(input_, status_, msg_='Success!'):
     response = SuccessResponseSerializer(
-            data = {'data': input_, 'msg': msg_}
+            data = {'data': input_, 'message': msg_}
         )
     if response.is_valid():
         return Response(

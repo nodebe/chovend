@@ -123,5 +123,5 @@ class TestProductAPI(TestCaseBase):
         update = client.put(update_url, data=new_socials_data, format='json', **self.token)
 
         self.assertEqual(update.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(update.data['msg'], 'Product Updated!')
+        self.assertEqual(update.data['message'], 'Product Updated!')
         self.assertEqual(update.data['data']['social_media_urls'][0]['url'], 'https://www.twitter.com/new_twitter')

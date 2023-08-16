@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from chovend.errors import UserError
 from user.classes import UserClass
 from product.classes import LocationClass, ProductClass
 from product.serializers import ProductSerializer, ProductResponseSerializer, ProductUpdateSerializer, UpdateSocialMediaSerializer, UpdateSocialMediaResponseSerializer
@@ -63,7 +64,7 @@ def create_product(request):
                 )
 
         except Exception as e:
-            error_serializer = ErrorResponseSerializer(data={'msg': str(e)})
+            error_serializer = ErrorResponseSerializer(data={'message': str(e)})
 
             if error_serializer.is_valid():
                 return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
@@ -105,7 +106,7 @@ def update_product(request, product_id):
                 )
 
     except Exception as e:
-        error_serializer = ErrorResponseSerializer(data={'msg': str(e)})
+        error_serializer = ErrorResponseSerializer(data={'message': str(e)})
 
         if error_serializer.is_valid():
             return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
@@ -145,7 +146,39 @@ def update_product_social_media(request, product_id):
                 )
     
     except Exception as e:
-        error_serializer = ErrorResponseSerializer(data={'msg': str(e)})
+        error_serializer = ErrorResponseSerializer(data={'message': str(e)})
+
+        if error_serializer.is_valid():
+            return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_product(request, product_id):
+    try:
+        verify_user = verify_user_in_token(request, request.data['user'])
+
+        product_obj = ProductClass()
+        product = product_obj.get_product_by_id(id=product_id)
+
+        # Verify ownership of product
+        verify_owner = verify_owner_of_product(request, product.user.id)
+
+        return Response(request.data)
+    
+    except UserError as e:
+        error_serializer = ErrorResponseSerializer(data={'message': str(e)})
+
+        if error_serializer.is_valid():
+            return Response(error_serializer.data, status=e.status)
+        else:
+            return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    except Exception as e:
+        error_serializer = ErrorResponseSerializer(data={'message': str(e)})
 
         if error_serializer.is_valid():
             return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
