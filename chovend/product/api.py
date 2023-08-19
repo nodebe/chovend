@@ -56,6 +56,7 @@ def create_product(request):
 
             # Create Product
             product = product_obj.create_product(product_data)
+            product.images = product.get_images()
 
             serialized_product = ProductResponseSerializer(instance=product)
 
@@ -175,6 +176,39 @@ def delete_product(request, product_id):
                     status_=status.HTTP_204_NO_CONTENT,
                     msg_='Product Deleted!'
                 )
+    
+    except UserError as e:
+        error_serializer = ErrorResponseSerializer(data={'message': str(e)})
+
+        if error_serializer.is_valid():
+            return Response(error_serializer.data, status=e.status)
+        else:
+            return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    except Exception as e:
+        error_serializer = ErrorResponseSerializer(data={'message': str(e)})
+
+        if error_serializer.is_valid():
+            return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def get_product(request, product_id):
+    try:
+
+        product_obj = ProductClass()
+        product = product_obj.get_product_by_id(id=product_id)
+
+        # Get the images as a list 
+        product.images = product.get_images()
+
+        serialized_product = ProductResponseSerializer(instance=product)
+
+        return success_response(
+                input_=serialized_product.data, 
+                status_=status.HTTP_200_OK
+            )
     
     except UserError as e:
         error_serializer = ErrorResponseSerializer(data={'message': str(e)})

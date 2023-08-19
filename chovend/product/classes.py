@@ -49,8 +49,11 @@ class ProductClass:
 
     def create_product(self, product_data):
         social_media_urls = product_data.pop('social_media_urls')
+        product_images = product_data.pop('images')
 
         product = Product.objects.create(**product_data)
+        product.set_images(value=product_images)
+
         social_media = self.create_product_social_media(social_media_urls, product)
 
         return product

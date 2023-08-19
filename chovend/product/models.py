@@ -79,6 +79,7 @@ class Product(models.Model):
     def set_images(self, value):
         "Set the image list to a json before saving"
         self.images = json.dumps(value)
+        self.save()
 
     def get_images(self):
         "Get the image list of the product"
