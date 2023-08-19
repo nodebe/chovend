@@ -2,7 +2,7 @@ from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
 from django.urls import reverse
 from user.models import User
-from .models import City, State, Country, SocialMedia
+from .models import City, State, Country, SocialMedia, ProductStatus
 from rest_framework_simplejwt.tokens import RefreshToken
 
 client = APIClient()
@@ -44,6 +44,12 @@ class TestCaseBase(APITestCase):
         whatsapp = SocialMedia.objects.create(id=5, social_media='Whatsapp')
 
     @property
+    def create_product_status(self):
+        active = ProductStatus.objects.create(id=1, status='Active')
+        deleted = ProductStatus.objects.create(id=2, status='Deleted')
+        suspended = ProductStatus.objects.create(id=3, status ='Suspended')
+
+    @property
     def bearer_token(self):
         "Create the bearer token for the endpoints that require it."
         user = User.objects.create_user(
@@ -60,6 +66,7 @@ class TestProductAPI(TestCaseBase):
     def setUp(self):
         self.create_location
         self.create_social_media
+        self.create_product_status
         self.token = self.bearer_token
         self.data = product_data
 
@@ -125,3 +132,17 @@ class TestProductAPI(TestCaseBase):
         self.assertEqual(update.status_code, status.HTTP_201_CREATED)
         self.assertEqual(update.data['message'], 'Product Updated!')
         self.assertEqual(update.data['data']['social_media_urls'][0]['url'], 'https://www.twitter.com/new_twitter')
+
+    def test_delete_product(self):
+        "Test for deleting product" 
+        create_url = reverse('create_product')
+        create = client.post(create_url, data=self.data, format='json', **self.token)
+        created_product_id = create.data['data']['id']
+
+        delete_url = reverse('delete_product', kwargs={'product_id': created_product_id})
+        data_user = {'user': self.data['user']}
+
+        delete = client.delete(delete_url, data=data_user, format='json', **self.token)
+
+        self.assertEqual(delete.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(delete.data['message'], 'Product Deleted!')
