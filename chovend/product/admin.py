@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, City, State, Country, SocialMedia, ProductSocialMedia
+from .models import Product, City, State, Country, SocialMedia, ProductSocialMedia, ProductStatus
 
 # Register your models here.
 
@@ -14,6 +14,7 @@ class ProductAdmin(admin.ModelAdmin):
         "user",
         "id"
     ]
+    ordering = ["-date_created"]
 
 
 @admin.register(City)
@@ -79,3 +80,12 @@ class ProductSocialMediaAdmin(admin.ModelAdmin):
     )
 
     ordering = ["product"]
+
+@admin.register(ProductStatus)
+class ProductStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "status"
+    )
+
+    ordering = ["id"]

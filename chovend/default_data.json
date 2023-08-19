@@ -33,5 +33,26 @@
         "fields": {
             "social_media": "Whatsapp"
         }
+    },
+    {
+        "model": "product.ProductStatus",
+        "pk": 1,
+        "fields": {
+            "status": "Active"
+        }
+    },
+    {
+        "model": "product.ProductStatus",
+        "pk": 2,
+        "fields": {
+            "status": "Deleted"
+        }
+    },
+    {
+        "model": "product.ProductStatus",
+        "pk": 3,
+        "fields": {
+            "status": "Suspended"
+        }
     }
 ]

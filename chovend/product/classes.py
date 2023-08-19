@@ -1,5 +1,5 @@
 from chovend.errors import UserError
-from product.models import Country, State, City, Product, SocialMedia, ProductSocialMedia
+from product.models import Country, State, City, Product, SocialMedia, ProductSocialMedia, ProductStatus
 
 
 class LocationClass:
@@ -43,7 +43,7 @@ class LocationClass:
 class ProductClass:
 
     def get_product_by_id(self, id):
-        product = Product.objects.get(id=id)
+        product = Product.objects.get(id=id, status=1)
 
         return product
 
@@ -103,3 +103,12 @@ class ProductClass:
 
         if product:
             raise UserError('Product already exists with Title and Description!')
+
+    def delete_product(self, product):
+        "Sets product status to deleted."
+        product_status_delete = ProductStatus.objects.get(id=2)
+
+        product.status = product_status_delete
+        product.save()
+
+        return True

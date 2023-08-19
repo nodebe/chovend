@@ -44,6 +44,12 @@ class City(models.Model):
     def __str__(self):
         return str(self.city_name)
 
+class ProductStatus(models.Model):
+    status = models.CharField(max_length=10, null=False)
+    date_created = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return str(self.status)
 
 class Product(models.Model):
     "Product model in postgreSQL"
@@ -57,16 +63,18 @@ class Product(models.Model):
         SocialMedia, through='ProductSocialMedia')
     website = models.URLField(null=True, blank=True)
     images = models.CharField(max_length=1000, default='[]')
+    status = models.ForeignKey(ProductStatus, on_delete=models.SET_NULL, null=True, related_name='product_status', default=1)
     date_created = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = str(uuid.uuid4().hex)
-
+        
         # Save the search_description as a non-duplicate #Unordered but doesn't matter
         self.search_description = ' '.join(set(self.description.split()))
 
         super().save(*args, **kwargs)
+        
 
     def set_images(self, value):
         "Set the image list to a json before saving"

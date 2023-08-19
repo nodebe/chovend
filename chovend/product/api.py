@@ -8,9 +8,10 @@ from chovend.errors import UserError
 from user.classes import UserClass
 from product.classes import LocationClass, ProductClass
 from product.serializers import ProductSerializer, ProductResponseSerializer, ProductUpdateSerializer, UpdateSocialMediaSerializer, UpdateSocialMediaResponseSerializer
-from chovend.serializers import ErrorResponseSerializer
+from chovend.serializers import ErrorResponseSerializer, SuccessResponseSerializer
 from chovend.utils import verify_user_in_token, verify_owner_of_product
 from chovend.response import error_response, success_response
+import requests
 
 
 @api_view(['POST'])
@@ -167,7 +168,13 @@ def delete_product(request, product_id):
         # Verify ownership of product
         verify_owner = verify_owner_of_product(request, product.user.id)
 
-        return Response(request.data)
+        delete_product = product_obj.delete_product(product=product)
+
+        return success_response(
+                    input_={}, 
+                    status_=status.HTTP_204_NO_CONTENT,
+                    msg_='Product Deleted!'
+                )
     
     except UserError as e:
         error_serializer = ErrorResponseSerializer(data={'message': str(e)})

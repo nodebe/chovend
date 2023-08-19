@@ -4,7 +4,7 @@ import os, jwt
 from rest_framework import status
 
 def verify_user_in_token(request, user_id):
-    raw_token = request.aut
+    raw_token = request.auth
     validated_token = jwt.decode(str(raw_token), key=os.environ.get('SECRET_KEY'), algorithms=['HS256'])
 
     check_user_ids = (validated_token['user_id'] == user_id)
