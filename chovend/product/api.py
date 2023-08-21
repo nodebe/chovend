@@ -6,12 +6,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from chovend.errors import UserError
 from user.classes import UserClass
-from product.classes import LocationClass, ProductClass
-from product.serializers import ProductSerializer, ProductResponseSerializer, ProductUpdateSerializer, UpdateSocialMediaSerializer, UpdateSocialMediaResponseSerializer
-from chovend.serializers import ErrorResponseSerializer, SuccessResponseSerializer
+from product.classes import LocationClass, ProductClass, SocialMediaClass
+from product.serializers import ProductSerializer, ProductResponseSerializer, ProductUpdateSerializer, UpdateSocialMediaSerializer, UpdateSocialMediaResponseSerializer, SocialMediaSerializer
+from chovend.serializers import ErrorResponseSerializer
 from chovend.utils import verify_user_in_token, verify_owner_of_product
 from chovend.response import error_response, success_response
-import requests
 
 
 @api_view(['POST'])
@@ -21,7 +20,6 @@ def create_location_db(request):
     with open(file_path, 'r') as file:
         data = json.loads(file.read())
 
-        print(type(data))
         location_obj = LocationClass()
         create_location_db = location_obj.create_location_db(data)
 
@@ -225,3 +223,27 @@ def get_product(request, product_id):
             return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_social_media_list(request):
+    try:
+        social_media_obj = SocialMediaClass()
+        social_media_list = social_media_obj.get_social_media_list()
+
+        social_media_serializer = SocialMediaSerializer(social_media_list, many=True)
+
+        return success_response(
+            input_={'socials': social_media_serializer.data}, 
+            status_=status.HTTP_200_OK
+        )
+
+    except Exception as e:
+        error_serializer = ErrorResponseSerializer(data={'message': str(e)})
+
+        if error_serializer.is_valid():
+            return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(error_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

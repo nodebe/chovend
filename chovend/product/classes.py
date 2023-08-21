@@ -115,3 +115,10 @@ class ProductClass:
         product.save()
 
         return True
+
+class SocialMediaClass:
+
+    def get_social_media_list(self):
+        social_medial_list = SocialMedia.objects.all()
+
+        return social_medial_list

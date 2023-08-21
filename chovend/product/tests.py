@@ -146,3 +146,12 @@ class TestProductAPI(TestCaseBase):
 
         self.assertEqual(delete.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(delete.data['message'], 'Product Deleted!')
+    
+    def test_get_social_media_list(self):
+        "Test for getting list of social media"
+        get_url = reverse('get_social_media_list')
+        get_media = client.get(get_url, format='json', **self.token)
+
+        self.assertEqual(get_media.status_code, status.HTTP_200_OK)
+        self.assertEqual(get_media.data['data']['socials'][0]['social_media'], 'Facebook')
+        self.assertEqual(get_media.data['data']['socials'][0]['id'], 1)

@@ -21,6 +21,9 @@ class SocialMediaSerializer(serializers.ModelSerializer):
         model = SocialMedia
         fields = ['id', 'social_media']
 
+class SocialMediaResponseSerializer(serializers.Serializer):
+    data = SocialMediaSerializer(many=True)
+
 
 class ProductSocialMediaSerializer(serializers.ModelSerializer):
     "Product Social Media serializer"
