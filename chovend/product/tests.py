@@ -48,6 +48,14 @@ class TestCaseBase(APITestCase):
         active = ProductStatus.objects.create(id=1, status='Active')
         deleted = ProductStatus.objects.create(id=2, status='Deleted')
         suspended = ProductStatus.objects.create(id=3, status ='Suspended')
+    
+    @property
+    def create_product(self):
+        create_url = reverse('create_product')
+        create = client.post(create_url, data=self.data, format='json', **self.token)
+        created_product_id = create.data['data']['id']
+
+        return created_product_id
 
     @property
     def bearer_token(self):
@@ -89,9 +97,7 @@ class TestProductAPI(TestCaseBase):
 
     def test_update_product(self):
         "Tests for updating product"
-        create_url = reverse('create_product')
-        create = client.post(create_url, data=self.data, format='json', **self.token)
-        created_product_id = create.data['data']['id']
+        created_product_id = self.create_product
 
         update_url = reverse('update_product', kwargs={'product_id': created_product_id})
 
@@ -104,9 +110,7 @@ class TestProductAPI(TestCaseBase):
     def test_update_product_social_media(self):
         "Test for updating product social media"
 
-        create_url = reverse('create_product')
-        create = client.post(create_url, data=self.data, format='json', **self.token)
-        created_product_id = create.data['data']['id']
+        created_product_id = self.create_product
 
         new_socials_data = {
             "user": self.data['user'],
@@ -135,9 +139,7 @@ class TestProductAPI(TestCaseBase):
 
     def test_delete_product(self):
         "Test for deleting product" 
-        create_url = reverse('create_product')
-        create = client.post(create_url, data=self.data, format='json', **self.token)
-        created_product_id = create.data['data']['id']
+        created_product_id = self.create_product
 
         delete_url = reverse('delete_product', kwargs={'product_id': created_product_id})
         data_user = {'user': self.data['user']}
@@ -147,6 +149,16 @@ class TestProductAPI(TestCaseBase):
         self.assertEqual(delete.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(delete.data['message'], 'Product Deleted!')
     
+    def test_get_single_product(self):
+        "Get Individual product with id"
+        created_product_id = self.create_product
+
+        get_product_url = reverse('get_product', kwargs={'product_id': created_product_id})
+        get_product = client.get(get_product_url, format='json')
+
+        self.assertEqual(get_product.status_code, status.HTTP_200_OK)
+        self.assertEqual(get_product.data['data']['id'], created_product_id)
+
     def test_get_social_media_list(self):
         "Test for getting list of social media"
         get_url = reverse('get_social_media_list')
