@@ -10,7 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class UserClass:
 
     def get_user_by_id(self, id:str):
-        user = User.objects.filter(id=id).first()
+        user = User.objects.get(id=id)
 
         return user
 

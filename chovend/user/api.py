@@ -6,7 +6,6 @@ from user.classes import OTPClass, UserClass
 from user.models import User
 from user.serializers import UserSerializer, UserIDSerializer, OTPSerializer, UserLoginSerializer, UserLoginResponseSerializer
 from chovend.response import error_response, success_response
-from rest_framework_simplejwt.tokens import RefreshToken
 
 
 @api_view(['POST'])
@@ -47,7 +46,7 @@ def send_otp(request):
             )
         
         except Exception as e:
-            error_serializer = ErrorResponseSerializer(data={'msg': str(e)})
+            error_serializer = ErrorResponseSerializer(data={'message': str(e)})
 
             if error_serializer.is_valid():
                 return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
@@ -78,7 +77,7 @@ def verify_otp(request):
             )
         
         except Exception as e:
-            error_serializer = ErrorResponseSerializer(data={'msg': str(e), 'data':{'id': serializer.data['id']}})
+            error_serializer = ErrorResponseSerializer(data={'message': str(e), 'data':{'id': serializer.data['id']}})
 
             if error_serializer.is_valid():
                 return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)
@@ -113,7 +112,7 @@ def login(request):
                 )
         
         except Exception as e:
-            error_serializer = ErrorResponseSerializer(data={'msg': str(e)})
+            error_serializer = ErrorResponseSerializer(data={'message': str(e)})
 
             if error_serializer.is_valid():
                 return Response(error_serializer.data, status=status.HTTP_400_BAD_REQUEST)

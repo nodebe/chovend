@@ -2,7 +2,6 @@ from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from rest_framework_simplejwt.tokens import RefreshToken
 from user.models import Otp
 
 
@@ -56,7 +55,7 @@ class TestAuthAPI(APITestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['msg'], 'An error has occured!')
+        self.assertEqual(response.data['message'], 'An error has occured!')
     
     def test_register_existing_email(self):
         url = reverse('register')
@@ -65,7 +64,7 @@ class TestAuthAPI(APITestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['msg'], 'An error has occured!')
+        self.assertEqual(response.data['message'], 'An error has occured!')
     
 
     def test_send_otp_success(self):
@@ -82,7 +81,7 @@ class TestAuthAPI(APITestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['msg'], "OTP sent to email!")
+        self.assertEqual(response.data['message'], "OTP sent to email!")
         
         # Check that OTP was created
         self.assertEqual(Otp.objects.all().count(), 1)
@@ -99,7 +98,7 @@ class TestAuthAPI(APITestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['msg'], "User matching query does not exist.")
+        self.assertEqual(response.data['message'], "User matching query does not exist.")
     
     def test_send_otp_invalid_id(self):
         send_otp_url = reverse('send_otp')
@@ -112,7 +111,7 @@ class TestAuthAPI(APITestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-        self.assertEqual(response.data['msg'], "An error has occured!")
+        self.assertEqual(response.data['message'], "An error has occured!")
     
     
     def test_verify_otp_success(self):
@@ -131,7 +130,7 @@ class TestAuthAPI(APITestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['msg'], 'Verified!')
+        self.assertEqual(response.data['message'], 'Verified!')
 
 
     def test_verify_otp_wrong_otp(self):
@@ -150,7 +149,7 @@ class TestAuthAPI(APITestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['msg'], 'Wrong OTP!')
+        self.assertEqual(response.data['message'], 'Wrong OTP!')
     
     def test_login_incorrect_password(self):
         login_url = reverse('login')
@@ -164,7 +163,7 @@ class TestAuthAPI(APITestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['msg'], 'Incorrect Password!')
+        self.assertEqual(response.data['message'], 'Incorrect Password!')
     
     def test_login_email_not_found(self):
         login_url = reverse('login')
@@ -178,4 +177,4 @@ class TestAuthAPI(APITestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['msg'], 'Email does not exist!')
+        self.assertEqual(response.data['message'], 'Email does not exist!')
