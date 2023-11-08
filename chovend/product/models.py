@@ -1,4 +1,4 @@
-'This is the file that holds the models'
+"""This is the file that holds the models"""
 
 import uuid
 import json
@@ -8,8 +8,8 @@ from user.models import User
 
 
 class SocialMedia(models.Model):
-    "Model for the Different Social media channels"
-    social_media = models.CharField(max_length=50, null=True)
+    """Model for the Different Social media channels"""
+    social_media = models.CharField(max_length=300, null=True)
     date_created = models.DateTimeField(default=timezone.now)
 
     def __str__(self) -> str:
@@ -17,8 +17,8 @@ class SocialMedia(models.Model):
 
 
 class Country(models.Model):
-    "Model to Store Country"
-    country_name = models.CharField(max_length=50, null=False)
+    """Model to Store Country"""
+    country_name = models.CharField(max_length=300, null=False)
     date_created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -26,8 +26,8 @@ class Country(models.Model):
 
 
 class State(models.Model):
-    "Model to store states"
-    state_name = models.CharField(max_length=50, null=False)
+    """Model to store states"""
+    state_name = models.CharField(max_length=300, null=False)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, null=False)
     date_created = models.DateTimeField(default=timezone.now)
 
@@ -36,13 +36,14 @@ class State(models.Model):
 
 
 class City(models.Model):
-    "Model to store cities"
-    city_name = models.CharField(max_length=50, null=False)
+    """Model to store cities"""
+    city_name = models.CharField(max_length=300, null=False)
     state = models.ForeignKey(State, on_delete=models.CASCADE, null=False)
     date_created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return str(self.city_name)
+
 
 class ProductStatus(models.Model):
     status = models.CharField(max_length=10, null=False)
@@ -50,6 +51,7 @@ class ProductStatus(models.Model):
 
     def __str__(self):
         return str(self.status)
+
 
 class Product(models.Model):
     "Product model in postgreSQL"
@@ -63,18 +65,18 @@ class Product(models.Model):
         SocialMedia, through='ProductSocialMedia')
     website = models.URLField(null=True, blank=True)
     images = models.CharField(max_length=1000, default='[]')
-    status = models.ForeignKey(ProductStatus, on_delete=models.SET_NULL, null=True, related_name='product_status', default=1)
+    status = models.ForeignKey(ProductStatus, on_delete=models.SET_NULL, null=True, related_name='product_status',
+                               default=1)
     date_created = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = str(uuid.uuid4().hex)
-        
+
         # Save the search_description as a non-duplicate #Unordered but doesn't matter
         self.search_description = ' '.join(set(self.description.split()))
 
         super().save(*args, **kwargs)
-        
 
     def set_images(self, value):
         "Set the image list to a json before saving"

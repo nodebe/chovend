@@ -19,7 +19,7 @@ class ProductDocument(Document):
         fields={'raw': fields.KeywordField()})
 
     class Django:
-        "Create the model from postgresql in elastic search"
+        """Create the model from postgresql in elastic search"""
         model = Product
         fields = [
             'title',

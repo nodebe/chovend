@@ -86,7 +86,7 @@ class TestProductAPI(TestCaseBase):
         self.assertEqual(request.status_code, status.HTTP_201_CREATED)
     
     def test_create_existing_product(self):
-        "Checks for existing product in DB using the title and description"
+        """Checks for existing product in DB using the title and description"""
         url = reverse('create_product')
         create = client.post(url, data=self.data, format='json', **self.token)
 
@@ -108,7 +108,7 @@ class TestProductAPI(TestCaseBase):
         self.assertEqual(update.data['data']['title'], 'Updated Title!')
 
     def test_update_product_social_media(self):
-        "Test for updating product social media"
+        """Test for updating product social media"""
 
         created_product_id = self.create_product
 

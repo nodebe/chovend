@@ -1,3 +1,5 @@
+import time
+
 from chovend.errors import UserError
 from product.models import Country, State, City, Product, SocialMedia, ProductSocialMedia, ProductStatus
 
@@ -28,14 +30,19 @@ class LocationClass:
 
     def create_location_db(self, data):
         for city_detail in data:
-            city = city_detail['name']
-            state = city_detail['state_name']
-            country = city_detail['country_name']
+            try:
+                city = city_detail['name']
+                state = city_detail['state_name']
+                country = city_detail['country_name']
 
-            created = self.get_or_create_city(
-                city_name=city, state_name=state, country_name=country)
+                created = self.get_or_create_city(
+                    city_name=city, state_name=state, country_name=country)
 
-            print(f'{created.id}. {city}==>{state}==>{country}')
+                print(f'{created.id}. {city}==>{state}==>{country}')
+            except Exception as e:
+                print(e)
+                time.sleep(5)
+                continue
 
         return True
 
